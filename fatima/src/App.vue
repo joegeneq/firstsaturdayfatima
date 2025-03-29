@@ -1,6 +1,7 @@
 <template>
   <h1>Food</h1>
   <food-item/>
+  <new-component-1/>
 </template>
 
 <script></script>
