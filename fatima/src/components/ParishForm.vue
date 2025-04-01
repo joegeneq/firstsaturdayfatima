@@ -5,7 +5,7 @@
         <label for="parish">Parish:</label>
         <select v-model="form.parish" id="parish" required>
           <option value="" disabled>Select a parish</option>
-          <option v-for="parish in parishes" :key="parish.id" :value="parish.id">{{ parish.parish_name }}</option>
+          <option v-for="parish in parishes" :key="parish.id" :value="parish.id">{{ parish.parish_name }}.{{ parish.diocese_name }}</option>
         </select>
         <br>
         <label for="family">Family:</label>
