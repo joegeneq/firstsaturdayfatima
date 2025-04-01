@@ -6,10 +6,8 @@
 
 <script>
 export default {
-  props: [
-      'foodName'
-  ]
+  props: ['foodName']
 };
 </script>
 
-<style></style>  
+<style></style>

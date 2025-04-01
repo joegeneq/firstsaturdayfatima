@@ -1,19 +1,32 @@
 <template>
   <h1>Food</h1>
-  <food-item food-name="Apples"/>
-  <food-item food-name="Pizza"/>
-  <food-item food-name="Rice"/>
+  <p>Components created with v-for based on an array.</p>
+  <div id="wrapper">
+    <food-item
+      v-for="x in foods"
+      v-bind:food-name="x"/>
+  </div> 
 </template>
 
-<script></script>
+<script>
+export default {
+  data() {
+    return {
+      foods: ['Apples','Pizza','Rice','Fish','Cake']
+    };
+  }
+}
+</script>
 
 <style>
-  #app > div {
+  #wrapper {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  #wrapper > div {
     border: dashed black 1px;
-    display: inline-block;
-    width: 120px;
     margin: 10px;
-    padding: 10px;
+    padding: 0 20px;
     background-color: lightgreen;
   }
-</style>    
+</style>     
