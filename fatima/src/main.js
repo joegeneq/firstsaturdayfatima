@@ -1,10 +1,10 @@
 import { createApp } from 'vue'
 
 import App from './App.vue'
-import FoodItem from './components/FoodItem.vue'
+import ParishForm from './components/ParishForm.vue'
 
 const app = createApp(App)
 
-app.component('food-item', FoodItem)
+app.component('parish-form', ParishForm)
 
 app.mount('#app')
