@@ -39,7 +39,7 @@
   const fetchFamilies = async () => {
     loadingFamilies.value = true;
     try {
-      const { data, error } = await supabase.from('family').select('id, family_name');
+      const { data, error } = await supabase.from('family').select('*');
       if (error) {
         console.error('Error fetching families:', error);
       } else {
