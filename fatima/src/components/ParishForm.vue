@@ -3,12 +3,22 @@
     <h2>Parish and Family Form</h2>
     <form @submit.prevent="submitForm">
       <label for="parish">Parish:</label>
-      <select v-model="form.parish" id="parish" required>
-        <option value="" disabled>Select a parish</option>
-        <option v-for="parish in parishes" :key="parish.id" :value="parish.id">
+      <input
+        type="text"
+        v-model="searchQuery"
+        id="parish"
+        placeholder="Search for a parish..."
+      />
+      <ul v-if="filteredParishes.length > 0">
+        <li
+          v-for="parish in filteredParishes"
+          :key="parish.id"
+          @click="selectParish(parish)"
+        >
           {{ parish.parish_name }}-{{ parish.diocese_name }}-{{ parish.arch_diocese_name }}
-        </option>
-      </select>
+        </li>
+      </ul>
+      <p v-else-if="searchQuery && !loading">No matching parishes found.</p>
       <br />
       <label for="family">Family:</label>
       <input type="text" v-model="form.family" id="family" required />
@@ -22,7 +32,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { supabase } from '../lib/supabaseClient';
 
 const parishes = ref([]);
@@ -33,6 +43,7 @@ const form = ref({
 const loading = ref(false);
 const submissionSuccess = ref(false);
 const submissionError = ref(null);
+const searchQuery = ref('');
 
 const fetchParishes = async () => {
   loading.value = true;
@@ -43,6 +54,21 @@ const fetchParishes = async () => {
     parishes.value = data;
   }
   loading.value = false;
+};
+
+const filteredParishes = computed(() => {
+  if (!searchQuery.value) {
+    return [];
+  }
+  return parishes.value.filter((parish) => {
+    const searchStr = `${parish.parish_name} ${parish.diocese_name} ${parish.arch_diocese_name}`.toLowerCase();
+    return searchStr.includes(searchQuery.value.toLowerCase());
+  });
+});
+
+const selectParish = (parish) => {
+  form.value.parish = parish.id;
+  searchQuery.value = `${parish.parish_name}-${parish.diocese_name}-${parish.arch_diocese_name}`;
 };
 
 const submitForm = async () => {
@@ -63,8 +89,9 @@ const submitForm = async () => {
     } else {
       console.log('Family inserted successfully');
       submissionSuccess.value = true;
-      // Optionally reset the form
-      form.value.family = ''; //reset family form input
+      form.value.family = '';
+      searchQuery.value = ''; //reset the search query
+      form.value.parish = ''; //reset the parish selection
     }
   } catch (err) {
     console.error('An unexpected error occurred:', err);
@@ -74,3 +101,23 @@ const submitForm = async () => {
 
 onMounted(fetchParishes);
 </script>
+
+<style scoped>
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+li:hover {
+  background-color: #f0f0f0;
+}
+</style>
