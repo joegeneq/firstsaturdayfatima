@@ -5,7 +5,7 @@
   <h1>Family Members</h1>
   <router-link to="/family-members">Add Family Member</router-link>
 
-  
+  <router-view />
 </template>
 
 <script></script>
