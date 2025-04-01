@@ -30,7 +30,7 @@
   
   const fetchParishes = async () => {
     loading.value = true;
-    let { data, error } = await supabase.from('parish_hierarchy').select('*');
+    let { data, error } = await supabase.from('parish').select('*');
     if (error) {
       console.error('Error fetching parishes:', error);
     } else {
