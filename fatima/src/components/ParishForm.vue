@@ -5,7 +5,7 @@
         <label for="parish">Parish:</label>
         <select v-model="form.parish" id="parish" required>
           <option value="" disabled>Select a parish</option>
-          <option v-for="parish in parishes" :key="parish.id" :value="parish.id">{{ parish.name }}</option>
+          <option v-for="parish in parishes" :key="parish.id" :value="parish.id">{{ parish.parish_name }}</option>
         </select>
         <br>
         <label for="family">Family:</label>
@@ -30,7 +30,7 @@
   
   const fetchParishes = async () => {
     loading.value = true;
-    let { data, error } = await supabase.from('parish').select('*');
+    let { data, error } = await supabase.from('parish_hierarchy').select('*');
     if (error) {
       console.error('Error fetching parishes:', error);
     } else {
