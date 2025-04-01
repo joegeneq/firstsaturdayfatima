@@ -12,7 +12,7 @@
 export default {
   data() {
     return {
-      foods: ['Apples','Pizza','Rice','Fish','Cake', 'Nuggets']
+      foods: ['Apples','Pizza','Rice','Fish','Cake','Nuggets']
     };
   }
 }
