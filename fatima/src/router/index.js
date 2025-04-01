@@ -9,7 +9,8 @@ const router = createRouter({
   routes: [
     { path: '/', component: App },
     { path: '/family-members', component: FamilyMember },
-    { path: '/parish-form', component: ParishForm}
+    { path: '/parish-form', component: ParishForm},
+    { path: '/:catchAll(.*)', redirect: '/parish-form' }, // Redirect all unknown routes to /parish-form
   ],
 });
 
