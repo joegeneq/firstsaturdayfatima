@@ -5,11 +5,11 @@
       <label for="parish">Parish:</label>
       <input
         type="text"
+        class="my-input"
         v-model="searchQuery"
         id="parish"
         placeholder="Search for a parish..."
         @input="handleSearch"
-        minlength="50"
       />
       <ul v-if="filteredParishes.length > 0">
         <li
@@ -113,6 +113,14 @@ const submitForm = async () => {
 </script>
 
 <style scoped>
+
+.my-input {
+  width: 100%; /* Makes the input take full width of its parent */
+  max-width: 400px; /* Limits the maximum width */
+  box-sizing: border-box; /* Ensures padding and border are included in the width */
+}
+
+
 ul {
   list-style-type: none;
   padding: 0;
