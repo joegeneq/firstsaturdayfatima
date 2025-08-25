@@ -116,7 +116,7 @@ const submitForm = async () => {
 
 .my-input {
   width: 100%; /* Makes the input take full width of its parent */
-  max-width: 600px; /* Limits the maximum width */
+  max-width: 500px; /* Limits the maximum width */
   box-sizing: border-box; /* Ensures padding and border are included in the width */
 }
 
