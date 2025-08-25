@@ -15,7 +15,7 @@
           :key="parish.id"
           @click="selectParish(parish)"
         >
-          {{ parish.parish_name }}-{{ parish.diocese_name }}-{{ parish.arch_diocese_name }}
+          {{ parish.church_name }}-{{ parish.city_name }}-{{ parish.province_name }}
         </li>
       </ul>
       <p v-else-if="searchQuery && !loading">No matching parishes found.</p>
@@ -47,7 +47,7 @@ const searchQuery = ref('');
 
 const fetchParishes = async () => {
   loading.value = true;
-  let { data, error } = await supabase.from('parish_hierarchy').select('*');
+  let { data, error } = await supabase.from('parish_lookup').select('id, church_name, city_name, province_name');
   if (error) {
     console.error('Error fetching parishes:', error);
   } else {
@@ -61,14 +61,14 @@ const filteredParishes = computed(() => {
     return [];
   }
   return parishes.value.filter((parish) => {
-    const searchStr = `${parish.parish_name} ${parish.diocese_name} ${parish.arch_diocese_name}`.toLowerCase();
+    const searchStr = `${parish.church_name} ${parish.city_name} ${parish.province_name}`.toLowerCase();
     return searchStr.includes(searchQuery.value.toLowerCase());
   });
 });
 
 const selectParish = (parish) => {
   form.value.parish = parish.id;
-  searchQuery.value = `${parish.parish_name}-${parish.diocese_name}-${parish.arch_diocese_name}`;
+  searchQuery.value = `${parish.church_name}-${parish.city_name}-${parish.province_name}`;
 };
 
 const submitForm = async () => {
@@ -90,8 +90,8 @@ const submitForm = async () => {
       console.log('Family inserted successfully');
       submissionSuccess.value = true;
       form.value.family = '';
-      searchQuery.value = ''; //reset the search query
-      form.value.parish = ''; //reset the parish selection
+      searchQuery.value = '';
+      form.value.parish = '';
     }
   } catch (err) {
     console.error('An unexpected error occurred:', err);
