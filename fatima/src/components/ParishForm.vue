@@ -8,6 +8,7 @@
         v-model="searchQuery"
         id="parish"
         placeholder="Search for a parish..."
+        @input="handleSearch"
       />
       <ul v-if="filteredParishes.length > 0">
         <li
@@ -18,7 +19,7 @@
           {{ parish.church_name }}-{{ parish.city_name }}-{{ parish.province_name }}
         </li>
       </ul>
-      <p v-else-if="searchQuery && !loading">No matching parishes found.</p>
+      <p v-else-if="searchQuery.length >= 3 && !loading && filteredParishes.length === 0">No matching parishes found.</p>
       <br />
       <label for="family">Family:</label>
       <input type="text" v-model="form.family" id="family" required />
@@ -32,7 +33,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, watch } from 'vue';
 import { supabase } from '../lib/supabaseClient';
 
 const parishes = ref([]);
@@ -44,10 +45,24 @@ const loading = ref(false);
 const submissionSuccess = ref(false);
 const submissionError = ref(null);
 const searchQuery = ref('');
+const showDropdown = ref(false);
+
+const handleSearch = () => {
+  if (searchQuery.value.length >= 3) {
+    fetchParishes();
+  } else {
+    parishes.value = [];
+  }
+};
 
 const fetchParishes = async () => {
   loading.value = true;
-  let { data, error } = await supabase.from('parish_lookup').select('parish_id, church_name, city_name, province_name').limit(4000);
+  const { data, error } = await supabase
+    .from('parish_lookup')
+    .select('parish_id, church_name, city_name, province_name')
+    .ilike('church_name', `%${searchQuery.value}%`)
+    .limit(100); 
+
   if (error) {
     console.error('Error fetching parishes:', error);
   } else {
@@ -57,18 +72,13 @@ const fetchParishes = async () => {
 };
 
 const filteredParishes = computed(() => {
-  if (!searchQuery.value) {
-    return [];
-  }
-  return parishes.value.filter((parish) => {
-    const searchStr = `${parish.church_name} ${parish.city_name} ${parish.province_name}`.toLowerCase();
-    return searchStr.includes(searchQuery.value.toLowerCase());
-  });
+  return parishes.value;
 });
 
 const selectParish = (parish) => {
   form.value.parish = parish.parish_id;
   searchQuery.value = `${parish.church_name}-${parish.city_name}-${parish.province_name}`;
+  parishes.value = []; // Clear the dropdown after selection
 };
 
 const submitForm = async () => {
@@ -94,12 +104,11 @@ const submitForm = async () => {
       form.value.parish = '';
     }
   } catch (err) {
-    console.error('An unexpected error occurred:', err);
-    submissionError.value = 'An unexpected error occurred.';
+      console.error('An unexpected error occurred:', err);
+      submissionError.value = 'An unexpected error occurred.';
   }
 };
 
-onMounted(fetchParishes);
 </script>
 
 <style scoped>
