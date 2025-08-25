@@ -1,5 +1,5 @@
 <template>
-  <h1>Family 
+  <h1>
   <router-link to="/parish-form">Add Family</router-link>
   </h1>
   <router-view />
