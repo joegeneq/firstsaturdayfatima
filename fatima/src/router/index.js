@@ -8,7 +8,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
 //    { path: '/', component: App },
-    { path: '/family-members', component: FamilyMember },
+//    { path: '/family-members', component: FamilyMember },
     { path: '/parish-form', component: ParishForm},
 //    { path: '/:catchAll(.*)', redirect: '/parish-form' }, // Redirect all unknown routes to /parish-form
   ],
