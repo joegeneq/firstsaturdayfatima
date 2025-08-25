@@ -1,5 +1,5 @@
 // main.js
-import { createApp, computed } from 'vue';
+import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router'; // Import the router
 
