@@ -51,7 +51,7 @@
       loadingFamilies.value = false;
     }
   };
-  /*
+  
   const addFamilyMember = async () => {
     memberAdded.value = false;
     memberError.value = null;
@@ -77,6 +77,6 @@
       memberError.value = 'An unexpected error occurred.';
     }
   };
-  */
+  
   onMounted(fetchFamilies);
   </script>
