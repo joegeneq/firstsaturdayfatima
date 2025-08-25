@@ -1,6 +1,6 @@
 // router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
-import FamilyMember from '../components/FamilyMember.vue'; // Adjust path as needed
+//import FamilyMember from '../components/FamilyMember.vue'; // Adjust path as needed
 import ParishForm from '../components/ParishForm.vue';
 import App from '../App.vue';
 
