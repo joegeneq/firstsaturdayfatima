@@ -9,6 +9,7 @@
         id="parish"
         placeholder="Search for a parish..."
         @input="handleSearch"
+        minlength="50"
       />
       <ul v-if="filteredParishes.length > 0">
         <li
