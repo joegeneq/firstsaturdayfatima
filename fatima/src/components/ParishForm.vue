@@ -47,7 +47,7 @@ const searchQuery = ref('');
 
 const fetchParishes = async () => {
   loading.value = true;
-  let { data, error } = await supabase.from('parish_lookup').select('parish_id, church_name, city_name, province_name');
+  let { data, error } = await supabase.from('parish_lookup').select('parish_id, church_name, city_name, province_name').limit(4000);
   if (error) {
     console.error('Error fetching parishes:', error);
   } else {
