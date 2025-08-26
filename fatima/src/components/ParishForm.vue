@@ -21,7 +21,7 @@
         </li>
       </ul>
       <p v-if="loading">Loading parishes...</p>
-      <p v-else-if="searchQuery.length >= 3 && !loading && filteredParishes.length === 0">No matching parishes found.</p>
+      
       <br />
       <label for="family">Name:</label>
       <input type="text" v-model="form.family" id="family" required />
@@ -114,19 +114,7 @@ const submitForm = async () => {
   }
 };
 
-// Use a watcher to log the value whenever filteredParishes changes: debug 2025 08 August 26
-watch(filteredParishes, (newValue) => {
-    console.log('filteredParishes length:', newValue.length);
-    console.log('filteredParishes value:', newValue); // Also log the array itself to see its contents
-}, { deep: true });
-
-// Use a watcher to log the value whenever selectedParishId changes: debug 2025 08 August 26
-watch(selectedParishId, (newValue) => {
-    console.log('selectedParishId length:', newValue.length);
-    console.log('selectedParishId value:', newValue); // Also log the array itself to see its contents
-}, { deep: true });
-
-
+  
 
 </script>
 
