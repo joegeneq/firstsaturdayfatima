@@ -440,7 +440,7 @@ const selectDiocese = (diocese) => {
 
 const handleTableCitySearch = async () => {
   if (filters.value.city.length >= 3) {
-    const { data, error } = await supabase.from('city').select(id, city).ilike('city', '%${filters.value.city}%').limit(50);
+    const { data, error } = await supabase.from('city').select('id, city').ilike('city', `%${filters.value.city}%').limit(50);
     if (!error) {
       tableFilterDropdowns.value.city = data;
     } else {
@@ -457,7 +457,7 @@ const handleTableCitySearch = async () => {
 
 const handleTableProvinceSearch = async () => {
   if (filters.value.province.length >= 3) {
-    const { data, error } = await supabase.from('province').select(id, province).ilike('province', '%${filters.value.province}%').limit(50);
+    const { data, error } = await supabase.from('province').select('id, province').ilike('province', `%${filters.value.province}%').limit(50);
     if (!error) {
       tableFilterDropdowns.value.province = data;
     } else {
@@ -474,7 +474,7 @@ const handleTableProvinceSearch = async () => {
 
 const handleTableDioceseSearch = async () => {
   if (filters.value.diocese_name.length >= 3) {
-    const { data, error } = await supabase.from('diocese').select(id, diocese_name, diocese_category(diocese_category)).ilike('diocese_name', '%${filters.value.diocese_name}%').limit(50);
+    const { data, error } = await supabase.from('diocese').select('id, diocese_name, diocese_category(diocese_category)').ilike('diocese_name', `%${filters.value.diocese_name}%').limit(50);
     if (!error) {
       tableFilterDropdowns.value.diocese = data;
     } else {
@@ -649,3 +649,6 @@ ul {
   padding: 0;
 }
 </style>
+[How to filter and query entities with Laravel and Vue 3](https://www.youtube.com/watch?v=6NXyDSu9kqQ)
+This video provides a general tutorial on how to filter and query data in Vue 3, which is relevant to your task of implementing filtering in your component.
+http://googleusercontent.com/youtube_content/0
