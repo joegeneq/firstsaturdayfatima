@@ -21,7 +21,7 @@
         </li>
       </ul>
       <p v-if="loading">Loading parishes...</p>
-      <p v-else-if="searchQuery.length >= 3 && !loading && filteredParishes.length === 0 && !parish.parish_id.value">No matching parishes found.</p>
+      <p v-else-if="searchQuery.length >= 3 && !loading && filteredParishes.length === 0 && !selectedParishId.value">No matching parishes found.</p>
       <br />
       <label for="family">Name:</label>
       <input type="text" v-model="form.family" id="family" required />
@@ -37,6 +37,8 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 import { supabase } from '../lib/supabaseClient';
+
+const selectedParishId = ref(null); // Added for additional validation
 
 const parishes = ref([]);
 const form = ref({
@@ -81,6 +83,7 @@ const selectParish = (parish) => {
   form.value.parish = parish.parish_id;
   searchQuery.value = `${parish.church_name}-${parish.city_name}-${parish.province_name}`;
   parishes.value = []; // Clear the dropdown after selection
+   selectedParishId.value = parish.parish_id; // Set the selected ID
 };
 
 const submitForm = async () => {
@@ -111,7 +114,7 @@ const submitForm = async () => {
   }
 };
 
-// Use a watcher to log the value whenever filteredParishes changes
+// Use a watcher to log the value whenever filteredParishes changes: debug 2025 08 August 26
 watch(filteredParishes, (newValue) => {
     console.log('filteredParishes length:', newValue.length);
     console.log('filteredParishes value:', newValue); // Also log the array itself to see its contents
