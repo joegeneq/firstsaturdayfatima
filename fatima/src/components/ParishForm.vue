@@ -110,6 +110,12 @@ const submitForm = async () => {
   }
 };
 
+// Use a watcher to log the value whenever filteredParishes changes
+watch(filteredParishes, (newValue) => {
+    console.log('filteredParishes length:', newValue.length);
+    console.log('filteredParishes value:', newValue); // Also log the array itself to see its contents
+}, { deep: true });
+
 </script>
 
 <style scoped>
