@@ -102,6 +102,7 @@
           </ul>
           <p v-else-if="dioceseSearchQuery.length >= 3 && !loadingDioceses && filteredDioceses.length === 0" class="text-sm text-gray-500 mt-1">No dioceses found.</p>
         </div>
+        
         <div class="md:col-span-3 text-right">
           <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
             Add Parish
@@ -133,7 +134,7 @@
             type="text"
             id="filterCity"
             v-model="filters.city"
-            @input="applyTableFilter('city')"
+            @input="handleTableCitySearch"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
             placeholder="Filter by city"
           />
@@ -154,7 +155,7 @@
             type="text"
             id="filterProvince"
             v-model="filters.province"
-            @input="applyTableFilter('province')"
+            @input="handleTableProvinceSearch"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
             placeholder="Filter by province"
           />
@@ -175,7 +176,7 @@
             type="text"
             id="filterDiocese"
             v-model="filters.diocese_name"
-            @input="applyTableFilter('diocese')"
+            @input="handleTableDioceseSearch"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
             placeholder="Filter by diocese"
           />
@@ -431,36 +432,47 @@ const selectDiocese = (diocese) => {
 };
 
 // --- Dynamic Filter Dropdowns (for the main table) ---
-const applyTableFilter = async (filterType) => {
-  let query;
-  let filterValue;
 
-  if (filterType === 'city') {
-    filterValue = filters.value.city;
-    query = supabase.from('city').select('id, city').ilike('city', `%${filterValue}%`);
-  } else if (filterType === 'province') {
-    filterValue = filters.value.province;
-    query = supabase.from('province').select('id, province').ilike('province', `%${filterValue}%`);
-  } else if (filterType === 'diocese') {
-    filterValue = filters.value.diocese_name;
-    query = supabase.from('diocese').select('id, diocese_name, diocese_category(diocese_category)').ilike('diocese_name', `%${filterValue}%`);
-  }
-
-  if (filterValue && filterValue.length >= 3) {
-    const { data, error } = await query.limit(50);
-    if (error) {
-      console.error(`Error fetching ${filterType} filters:`, error);
-      tableFilterDropdowns.value[filterType] = [];
+const handleTableCitySearch = async () => {
+  if (filters.value.city.length >= 3) {
+    const { data, error } = await supabase.from('city').select('id, city').ilike('city', `%${filters.value.city}%`).limit(50);
+    if (!error) {
+      tableFilterDropdowns.value.city = data;
     } else {
-      tableFilterDropdowns.value[filterType] = data;
+      console.error('Error fetching city filters:', error);
     }
   } else {
-    tableFilterDropdowns.value[filterType] = [];
-    // If input is cleared, re-fetch all parishes to clear filter
-    if (filterValue === '') {
-        fetchParishes();
-    }
+    tableFilterDropdowns.value.city = [];
   }
+  applyFilters();
+};
+
+const handleTableProvinceSearch = async () => {
+  if (filters.value.province.length >= 3) {
+    const { data, error } = await supabase.from('province').select('id, province').ilike('province', `%${filters.value.province}%`).limit(50);
+    if (!error) {
+      tableFilterDropdowns.value.province = data;
+    } else {
+      console.error('Error fetching province filters:', error);
+    }
+  } else {
+    tableFilterDropdowns.value.province = [];
+  }
+  applyFilters();
+};
+
+const handleTableDioceseSearch = async () => {
+  if (filters.value.diocese_name.length >= 3) {
+    const { data, error } = await supabase.from('diocese').select('id, diocese_name, diocese_category(diocese_category)').ilike('diocese_name', `%${filters.value.diocese_name}%`).limit(50);
+    if (!error) {
+      tableFilterDropdowns.value.diocese = data;
+    } else {
+      console.error('Error fetching diocese filters:', error);
+    }
+  } else {
+    tableFilterDropdowns.value.diocese = [];
+  }
+  applyFilters();
 };
 
 const selectTableFilter = (filterType, value) => {
@@ -471,8 +483,10 @@ const selectTableFilter = (filterType, value) => {
   } else if (filterType === 'diocese') {
     filters.value.diocese_name = value;
   }
-  tableFilterDropdowns.value[filterType] = []; // Hide dropdown
-  fetchParishes(); // Re-fetch parishes with the selected filter
+  
+  // Hide dropdown and trigger filter
+  tableFilterDropdowns.value[filterType] = [];
+  applyFilters();
 };
 
 // --- Main Parish Data Fetching, Filtering, Sorting, and Pagination ---
@@ -523,7 +537,7 @@ const fetchParishes = async () => {
 };
 
 const applyFilters = () => {
-    currentPage.value = 1; // Reset to first page on new filter
+    currentPage.value = 1;
     fetchParishes();
 };
 
@@ -534,7 +548,7 @@ const setSort = (column) => {
     sortColumn.value = column;
     sortDirection.value = 'asc';
   }
-  currentPage.value = 1; // Reset to first page on new sort
+  currentPage.value = 1;
   fetchParishes();
 };
 
