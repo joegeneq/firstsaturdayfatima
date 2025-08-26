@@ -142,7 +142,7 @@
             <li
               v-for="item in tableFilterDropdowns.city"
               :key="item.id"
-              @click="selectTableFilter('city', item.city)"
+              @click="selectTableFilter('city', item.city, item.id)"
               class="p-2 cursor-pointer hover:bg-indigo-500 hover:text-white text-sm"
             >
               {{ item.city }}
@@ -163,7 +163,7 @@
             <li
               v-for="item in tableFilterDropdowns.province"
               :key="item.id"
-              @click="selectTableFilter('province', item.province)"
+              @click="selectTableFilter('province', item.province, item.id)"
               class="p-2 cursor-pointer hover:bg-indigo-500 hover:text-white text-sm"
             >
               {{ item.province }}
@@ -184,7 +184,7 @@
             <li
               v-for="item in tableFilterDropdowns.diocese"
               :key="item.id"
-              @click="selectTableFilter('diocese', item.diocese_name)"
+              @click="selectTableFilter('diocese', item.diocese_name, item.id)"
               class="p-2 cursor-pointer hover:bg-indigo-500 hover:text-white text-sm"
             >
               {{ item.diocese_name }} - {{ item.diocese_category.diocese_category }}
@@ -277,6 +277,11 @@ const filters = ref({
   province: '',
   diocese_name: '',
 });
+
+// New reactive variables to store the IDs for filtering
+const filterCityId = ref(null);
+const filterProvinceId = ref(null);
+const filterDioceseId = ref(null);
 
 const tableFilterDropdowns = ref({
   city: [],
@@ -435,7 +440,7 @@ const selectDiocese = (diocese) => {
 
 const handleTableCitySearch = async () => {
   if (filters.value.city.length >= 3) {
-    const { data, error } = await supabase.from('city').select('id, city').ilike('city', `%${filters.value.city}%`).limit(50);
+    const { data, error } = await supabase.from('city').select('id, city').ilike('city', `%${filters.value.city}%').limit(50);
     if (!error) {
       tableFilterDropdowns.value.city = data;
     } else {
@@ -443,8 +448,8 @@ const handleTableCitySearch = async () => {
     }
   } else {
     tableFilterDropdowns.value.city = [];
-    // Only call applyFilters if the input is empty to clear the filter
     if (filters.value.city === '') {
+      filterCityId.value = null; // Clear the ID
       applyFilters();
     }
   }
@@ -452,7 +457,7 @@ const handleTableCitySearch = async () => {
 
 const handleTableProvinceSearch = async () => {
   if (filters.value.province.length >= 3) {
-    const { data, error } = await supabase.from('province').select('id, province').ilike('province', `%${filters.value.province}%`).limit(50);
+    const { data, error } = await supabase.from('province').select('id, province').ilike('province', `%${filters.value.province}%').limit(50);
     if (!error) {
       tableFilterDropdowns.value.province = data;
     } else {
@@ -461,6 +466,7 @@ const handleTableProvinceSearch = async () => {
   } else {
     tableFilterDropdowns.value.province = [];
     if (filters.value.province === '') {
+      filterProvinceId.value = null; // Clear the ID
       applyFilters();
     }
   }
@@ -468,7 +474,7 @@ const handleTableProvinceSearch = async () => {
 
 const handleTableDioceseSearch = async () => {
   if (filters.value.diocese_name.length >= 3) {
-    const { data, error } = await supabase.from('diocese').select('id, diocese_name, diocese_category(diocese_category)').ilike('diocese_name', `%${filters.value.diocese_name}%`).limit(50);
+    const { data, error } = await supabase.from('diocese').select('id, diocese_name, diocese_category(diocese_category)').ilike('diocese_name', `%${filters.value.diocese_name}%').limit(50);
     if (!error) {
       tableFilterDropdowns.value.diocese = data;
     } else {
@@ -477,18 +483,22 @@ const handleTableDioceseSearch = async () => {
   } else {
     tableFilterDropdowns.value.diocese = [];
     if (filters.value.diocese_name === '') {
+      filterDioceseId.value = null; // Clear the ID
       applyFilters();
     }
   }
 };
 
-const selectTableFilter = (filterType, value) => {
+const selectTableFilter = (filterType, value, id) => {
   if (filterType === 'city') {
     filters.value.city = value;
+    filterCityId.value = id; // Store the ID
   } else if (filterType === 'province') {
     filters.value.province = value;
+    filterProvinceId.value = id; // Store the ID
   } else if (filterType === 'diocese') {
     filters.value.diocese_name = value;
+    filterDioceseId.value = id; // Store the ID
   }
   
   // Hide dropdown and trigger filter
@@ -512,14 +522,16 @@ const fetchParishes = async () => {
     if (filters.value.church_name) {
       query = query.ilike('church_name', `%${filters.value.church_name}%`);
     }
-    if (filters.value.city) {
-      query = query.ilike('city.city', `%${filters.value.city}%`);
+
+    // Now filtering on foreign key IDs
+    if (filterCityId.value) {
+      query = query.eq('city_id', filterCityId.value);
     }
-    if (filters.value.province) {
-      query = query.ilike('province.province', `%${filters.value.province}%`);
+    if (filterProvinceId.value) {
+      query = query.eq('province_id', filterProvinceId.value);
     }
-    if (filters.value.diocese_name) {
-      query = query.ilike('diocese.diocese_name', `%${filters.value.diocese_name}%`);
+    if (filterDioceseId.value) {
+      query = query.eq('diocese_id', filterDioceseId.value);
     }
 
     if (sortColumn.value) {
