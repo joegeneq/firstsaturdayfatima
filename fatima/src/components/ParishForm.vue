@@ -20,6 +20,7 @@
           {{ parish.church_name }}-{{ parish.city_name }}-{{ parish.province_name }}
         </li>
       </ul>
+      <p v-if="loading">Loading parishes...</p>
       <p v-else-if="searchQuery.length >= 3 && filteredParishes.length != 0">No matching parishes found.</p>
       <br />
       <label for="family">Name:</label>
@@ -27,7 +28,7 @@
       <br />
       <button type="submit">Submit</button>
     </form>
-    <p v-if="loading">Loading parishes...</p>
+    
     <p v-if="submissionSuccess">Pledge added successfully!</p>
     <p v-if="submissionError">Error adding family: {{ submissionError }}</p>
   </div>
