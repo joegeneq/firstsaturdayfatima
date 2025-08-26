@@ -2,7 +2,6 @@
   <div class="container mx-auto p-4 bg-gray-50 min-h-screen rounded-lg shadow-lg">
     <h2 class="text-3xl font-bold mb-8 text-indigo-700">Parish Management</h2>
 
-    <!-- Insert New Parish Form -->
     <div class="mb-8 bg-white p-6 rounded-lg shadow">
       <h3 class="text-xl font-semibold mb-4 text-gray-800">Add New Parish</h3>
       <form @submit.prevent="insertParish" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -37,8 +36,6 @@
             placeholder="e.g., https://example.com"
           />
         </div>
-
-        <!-- City Dropdown with Search -->
         <div class="relative">
           <label for="city_search" class="block text-sm font-medium text-gray-700 mb-1">City:</label>
           <input
@@ -61,8 +58,6 @@
           </ul>
           <p v-else-if="citySearchQuery.length >= 3 && !loadingCities && filteredCities.length === 0" class="text-sm text-gray-500 mt-1">No cities found.</p>
         </div>
-
-        <!-- Province Dropdown with Search -->
         <div class="relative">
           <label for="province_search" class="block text-sm font-medium text-gray-700 mb-1">Province:</label>
           <input
@@ -85,8 +80,6 @@
           </ul>
           <p v-else-if="provinceSearchQuery.length >= 3 && !loadingProvinces && filteredProvinces.length === 0" class="text-sm text-gray-500 mt-1">No provinces found.</p>
         </div>
-
-        <!-- Diocese Dropdown with Search -->
         <div class="relative">
           <label for="diocese_search" class="block text-sm font-medium text-gray-700 mb-1">Diocese:</label>
           <input
@@ -109,7 +102,6 @@
           </ul>
           <p v-else-if="dioceseSearchQuery.length >= 3 && !loadingDioceses && filteredDioceses.length === 0" class="text-sm text-gray-500 mt-1">No dioceses found.</p>
         </div>
-        
         <div class="md:col-span-3 text-right">
           <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
             Add Parish
@@ -121,7 +113,6 @@
       <p v-if="insertError" class="text-center text-red-600 mt-4">Error adding parish: {{ insertError }}</p>
     </div>
 
-    <!-- Filter Section for Table -->
     <div class="mb-6 bg-white p-6 rounded-lg shadow">
       <h3 class="text-xl font-semibold mb-4 text-gray-800">Filter Parishes</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -136,49 +127,77 @@
             placeholder="Filter by church name"
           />
         </div>
-        <div>
+        <div class="relative">
           <label for="filterCity" class="block text-sm font-medium text-gray-700 mb-1">City:</label>
           <input
             type="text"
             id="filterCity"
             v-model="filters.city"
-            @input="applyFilters"
+            @input="applyTableFilter('city')"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
             placeholder="Filter by city"
           />
+          <ul v-if="tableFilterDropdowns.city.length > 0 && filters.city.length >= 3" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 shadow-lg max-h-40 overflow-y-auto">
+            <li
+              v-for="item in tableFilterDropdowns.city"
+              :key="item.id"
+              @click="selectTableFilter('city', item.city)"
+              class="p-2 cursor-pointer hover:bg-indigo-500 hover:text-white text-sm"
+            >
+              {{ item.city }}
+            </li>
+          </ul>
         </div>
-        <div>
+        <div class="relative">
           <label for="filterProvince" class="block text-sm font-medium text-gray-700 mb-1">Province:</label>
           <input
             type="text"
             id="filterProvince"
             v-model="filters.province"
-            @input="applyFilters"
+            @input="applyTableFilter('province')"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
             placeholder="Filter by province"
           />
+          <ul v-if="tableFilterDropdowns.province.length > 0 && filters.province.length >= 3" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 shadow-lg max-h-40 overflow-y-auto">
+            <li
+              v-for="item in tableFilterDropdowns.province"
+              :key="item.id"
+              @click="selectTableFilter('province', item.province)"
+              class="p-2 cursor-pointer hover:bg-indigo-500 hover:text-white text-sm"
+            >
+              {{ item.province }}
+            </li>
+          </ul>
         </div>
-        <div>
+        <div class="relative">
           <label for="filterDiocese" class="block text-sm font-medium text-gray-700 mb-1">Diocese:</label>
           <input
             type="text"
             id="filterDiocese"
             v-model="filters.diocese_name"
-            @input="applyFilters"
+            @input="applyTableFilter('diocese')"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
             placeholder="Filter by diocese"
           />
+          <ul v-if="tableFilterDropdowns.diocese.length > 0 && filters.diocese_name.length >= 3" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 shadow-lg max-h-40 overflow-y-auto">
+            <li
+              v-for="item in tableFilterDropdowns.diocese"
+              :key="item.id"
+              @click="selectTableFilter('diocese', item.diocese_name)"
+              class="p-2 cursor-pointer hover:bg-indigo-500 hover:text-white text-sm"
+            >
+              {{ item.diocese_name }} - {{ item.diocese_category.diocese_category }}
+            </li>
+          </ul>
         </div>
       </div>
     </div>
 
-    <!-- Loading and Error States for Table -->
     <p v-if="loadingParishes" class="text-center text-indigo-600 text-lg my-8">Loading parishes...</p>
     <p v-else-if="parishFetchError" class="text-center text-red-600 text-lg my-8">Error: {{ parishFetchError }}</p>
     <p v-else-if="parishes.length === 0 && (filters.church_name || filters.city || filters.province || filters.diocese_name)" class="text-center text-gray-600 text-lg my-8">No parishes found matching your filters.</p>
     <p v-else-if="parishes.length === 0" class="text-center text-gray-600 text-lg my-8">No parish data available. Add a new parish above!</p>
 
-    <!-- Parishes Table -->
     <div v-else class="overflow-x-auto bg-white rounded-lg shadow">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-100">
@@ -220,17 +239,36 @@
         </tbody>
       </table>
     </div>
+
+    <div class="flex justify-between items-center mt-6">
+      <button 
+        @click="goToPage(currentPage - 1)" 
+        :disabled="currentPage === 1" 
+        class="px-4 py-2 border rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+        Previous
+      </button>
+      <span class="text-gray-700">Page {{ currentPage }} of {{ totalPages }}</span>
+      <button 
+        @click="goToPage(currentPage + 1)" 
+        :disabled="currentPage >= totalPages" 
+        class="px-4 py-2 border rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+        Next
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { supabase } from '../lib/supabaseClient'; // Adjust path if necessary
+import { supabase } from '../lib/supabaseClient';
 
 // --- Reactive State for Parishes Table ---
 const parishes = ref([]);
 const loadingParishes = ref(true);
 const parishFetchError = ref(null);
+const currentPage = ref(1);
+const totalPages = ref(1);
+const itemsPerPage = 100;
 
 const filters = ref({
   church_name: '',
@@ -239,8 +277,14 @@ const filters = ref({
   diocese_name: '',
 });
 
+const tableFilterDropdowns = ref({
+  city: [],
+  province: [],
+  diocese: []
+});
+
 const sortColumn = ref(null);
-const sortDirection = ref('asc'); // 'asc' or 'desc'
+const sortDirection = ref('asc');
 
 // --- Reactive State for Insert Form ---
 const newParish = ref({
@@ -256,39 +300,34 @@ const insertLoading = ref(false);
 const insertSuccess = ref(false);
 const insertError = ref(null);
 
-// --- Reactive State for Dropdown Search ---
+// --- Reactive State for Dropdown Search (Insert Form) ---
 const citySearchQuery = ref('');
-const cities = ref([]);
-const filteredCities = ref([]); // Stores results from dynamic city search
+const filteredCities = ref([]);
 const loadingCities = ref(false);
-const selectedCityId = ref(null); // Tracks selected city for form submission
+const selectedCityId = ref(null);
 
 const provinceSearchQuery = ref('');
-const provinces = ref([]);
 const filteredProvinces = ref([]);
 const loadingProvinces = ref(false);
 const selectedProvinceId = ref(null);
 
 const dioceseSearchQuery = ref('');
-const dioceses = ref([]);
 const filteredDioceses = ref([]);
 const loadingDioceses = ref(false);
 const selectedDioceseId = ref(null);
 
-// --- Fetch Functions for Dropdown Data ---
-
+// --- Fetch Functions for Dropdown Data (Insert Form) ---
 const fetchCities = async () => {
   loadingCities.value = true;
   let query = supabase.from('city').select('id, city');
   if (citySearchQuery.value.length >= 3) {
     query = query.ilike('city', `%${citySearchQuery.value}%`);
   } else {
-    // If less than 3 chars, clear results, don't fetch
     filteredCities.value = [];
     loadingCities.value = false;
     return;
   }
-  const { data, error } = await query.limit(50); // Limit results for performance
+  const { data, error } = await query.limit(50);
   if (error) {
     console.error('Error fetching cities:', error);
     filteredCities.value = [];
@@ -338,13 +377,13 @@ const fetchDioceses = async () => {
   loadingDioceses.value = false;
 };
 
-// --- Dropdown Search Handlers ---
+// --- Dropdown Search Handlers (Insert Form) ---
 const handleCitySearch = () => {
   if (citySearchQuery.value.length >= 3) {
     fetchCities();
   } else {
     filteredCities.value = [];
-    selectedCityId.value = null; // Clear selection if search query is too short
+    selectedCityId.value = null;
     newParish.value.city_id = null;
   }
 };
@@ -369,12 +408,12 @@ const handleDioceseSearch = () => {
   }
 };
 
-// --- Dropdown Selection Handlers ---
+// --- Dropdown Selection Handlers (Insert Form) ---
 const selectCity = (city) => {
   newParish.value.city_id = city.id;
   citySearchQuery.value = city.city;
-  filteredCities.value = []; // Hide dropdown
-  selectedCityId.value = city.id; // Confirm selection
+  filteredCities.value = [];
+  selectedCityId.value = city.id;
 };
 
 const selectProvince = (province) => {
@@ -391,21 +430,67 @@ const selectDiocese = (diocese) => {
   selectedDioceseId.value = diocese.id;
 };
 
-// --- Main Parish Data Fetching, Filtering, and Sorting ---
+// --- Dynamic Filter Dropdowns (for the main table) ---
+const applyTableFilter = async (filterType) => {
+  let query;
+  let filterValue;
+
+  if (filterType === 'city') {
+    filterValue = filters.value.city;
+    query = supabase.from('city').select('id, city').ilike('city', `%${filterValue}%`);
+  } else if (filterType === 'province') {
+    filterValue = filters.value.province;
+    query = supabase.from('province').select('id, province').ilike('province', `%${filterValue}%`);
+  } else if (filterType === 'diocese') {
+    filterValue = filters.value.diocese_name;
+    query = supabase.from('diocese').select('id, diocese_name, diocese_category(diocese_category)').ilike('diocese_name', `%${filterValue}%`);
+  }
+
+  if (filterValue && filterValue.length >= 3) {
+    const { data, error } = await query.limit(50);
+    if (error) {
+      console.error(`Error fetching ${filterType} filters:`, error);
+      tableFilterDropdowns.value[filterType] = [];
+    } else {
+      tableFilterDropdowns.value[filterType] = data;
+    }
+  } else {
+    tableFilterDropdowns.value[filterType] = [];
+    // If input is cleared, re-fetch all parishes to clear filter
+    if (filterValue === '') {
+        fetchParishes();
+    }
+  }
+};
+
+const selectTableFilter = (filterType, value) => {
+  if (filterType === 'city') {
+    filters.value.city = value;
+  } else if (filterType === 'province') {
+    filters.value.province = value;
+  } else if (filterType === 'diocese') {
+    filters.value.diocese_name = value;
+  }
+  tableFilterDropdowns.value[filterType] = []; // Hide dropdown
+  fetchParishes(); // Re-fetch parishes with the selected filter
+};
+
+// --- Main Parish Data Fetching, Filtering, Sorting, and Pagination ---
 const fetchParishes = async () => {
   loadingParishes.value = true;
   parishFetchError.value = null;
 
   try {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    const end = start + itemsPerPage - 1;
+
     let query = supabase
       .from('parish')
-      .select('*, city(city), province(province), diocese(diocese_name, diocese_category(diocese_category)))'); // Deep select for related data
+      .select('*, city(city), province(province), diocese(diocese_name, diocese_category(diocese_category)))', { count: 'exact' });
 
-    // Apply filters
     if (filters.value.church_name) {
       query = query.ilike('church_name', `%${filters.value.church_name}%`);
     }
-    // For related table filters, you need to use the relationship name
     if (filters.value.city) {
       query = query.ilike('city.city', `%${filters.value.city}%`);
     }
@@ -416,19 +501,19 @@ const fetchParishes = async () => {
       query = query.ilike('diocese.diocese_name', `%${filters.value.diocese_name}%`);
     }
 
-    // Apply sorting
     if (sortColumn.value) {
-      // For sorting related columns, specify the relationship path
       query = query.order(sortColumn.value, { ascending: sortDirection.value === 'asc' });
     }
 
-    const { data, error: fetchError } = await query;
+    const { data, error: fetchError, count } = await query.range(start, end);
 
     if (fetchError) {
       throw fetchError;
     }
 
     parishes.value = data;
+    totalPages.value = Math.ceil(count / itemsPerPage);
+
   } catch (err) {
     console.error('Error fetching parishes:', err);
     parishFetchError.value = err.message || 'Could not fetch parish data.';
@@ -437,12 +522,11 @@ const fetchParishes = async () => {
   }
 };
 
-// Trigger parish table fetch when filter inputs change
 const applyFilters = () => {
-  fetchParishes();
+    currentPage.value = 1; // Reset to first page on new filter
+    fetchParishes();
 };
 
-// Set sort column and direction for the table
 const setSort = (column) => {
   if (sortColumn.value === column) {
     sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
@@ -450,7 +534,15 @@ const setSort = (column) => {
     sortColumn.value = column;
     sortDirection.value = 'asc';
   }
-  fetchParishes(); // Re-fetch with new sort order
+  currentPage.value = 1; // Reset to first page on new sort
+  fetchParishes();
+};
+
+const goToPage = (page) => {
+  if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
+    fetchParishes();
+  }
 };
 
 // --- Insert New Parish ---
@@ -459,7 +551,6 @@ const insertParish = async () => {
   insertSuccess.value = false;
   insertError.value = null;
 
-  // Basic validation for required fields
   if (!newParish.value.church_name) {
     insertError.value = 'Church Name is required.';
     insertLoading.value = false;
@@ -498,7 +589,6 @@ const insertParish = async () => {
     }
 
     insertSuccess.value = true;
-    // Clear form and re-fetch parish list to show new entry
     newParish.value = { church_name: '', church_address: '', church_url: '', city_id: null, province_id: null, diocese_id: null };
     citySearchQuery.value = '';
     provinceSearchQuery.value = '';
@@ -515,14 +605,12 @@ const insertParish = async () => {
   }
 };
 
-// --- Initial Data Fetch ---
 onMounted(() => {
-  fetchParishes(); // Fetch initial parish list
+  fetchParishes();
 });
 </script>
 
 <style scoped>
-/* Scoped styles can be added here, though Tailwind handles most of it */
 ul {
   list-style-type: none;
   padding: 0;
