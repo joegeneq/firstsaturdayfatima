@@ -443,8 +443,11 @@ const handleTableCitySearch = async () => {
     }
   } else {
     tableFilterDropdowns.value.city = [];
+    // Only call applyFilters if the input is empty to clear the filter
+    if (filters.value.city === '') {
+      applyFilters();
+    }
   }
-  applyFilters();
 };
 
 const handleTableProvinceSearch = async () => {
@@ -457,8 +460,10 @@ const handleTableProvinceSearch = async () => {
     }
   } else {
     tableFilterDropdowns.value.province = [];
+    if (filters.value.province === '') {
+      applyFilters();
+    }
   }
-  applyFilters();
 };
 
 const handleTableDioceseSearch = async () => {
@@ -471,8 +476,10 @@ const handleTableDioceseSearch = async () => {
     }
   } else {
     tableFilterDropdowns.value.diocese = [];
+    if (filters.value.diocese_name === '') {
+      applyFilters();
+    }
   }
-  applyFilters();
 };
 
 const selectTableFilter = (filterType, value) => {
