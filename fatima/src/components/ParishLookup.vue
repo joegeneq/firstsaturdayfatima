@@ -492,13 +492,13 @@ const handleTableDioceseSearch = async () => {
 const selectTableFilter = (filterType, value, id) => {
   if (filterType === 'city') {
     filters.value.city = value;
-    filterCityId.value = id; // Store the ID
+    filterCityId.value = id;
   } else if (filterType === 'province') {
     filters.value.province = value;
-    filterProvinceId.value = id; // Store the ID
+    filterProvinceId.value = id;
   } else if (filterType === 'diocese') {
     filters.value.diocese_name = value;
-    filterDioceseId.value = id; // Store the ID
+    filterDioceseId.value = id;
   }
   
   // Hide dropdown and trigger filter
