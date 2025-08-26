@@ -21,7 +21,7 @@
         </li>
       </ul>
       <p v-if="loading">Loading parishes...</p>
-      <p v-else-if="searchQuery.length >= 3 && filteredParishes.length != 0">No matching parishes found.</p>
+      <p v-else-if="searchQuery.length >= 3 && !loading && filteredParishes.length === 0">No matching parishes found.</p>
       <br />
       <label for="family">Name:</label>
       <input type="text" v-model="form.family" id="family" required />
