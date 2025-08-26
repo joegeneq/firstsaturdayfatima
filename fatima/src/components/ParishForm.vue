@@ -20,7 +20,7 @@
           {{ parish.church_name }}-{{ parish.city_name }}-{{ parish.province_name }}
         </li>
       </ul>
-      <p v-else-if="searchQuery.length >= 3 && !loading && filteredParishes.length === 0">No matching parishes found.</p>
+      <p v-else-if="filteredParishes.length === 0">No matching parishes found.</p>
       <br />
       <label for="family">Name:</label>
       <input type="text" v-model="form.family" id="family" required />
