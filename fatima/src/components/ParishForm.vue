@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>Parish and Family Form</h2>
+    <h2>Parish and Pledge Form</h2>
     <form @submit.prevent="submitForm">
       <label for="parish">Parish:</label>
       <input
@@ -22,13 +22,13 @@
       </ul>
       <p v-else-if="searchQuery.length >= 3 && !loading && filteredParishes.length === 0">No matching parishes found.</p>
       <br />
-      <label for="family">Family:</label>
+      <label for="family">Name:</label>
       <input type="text" v-model="form.family" id="family" required />
       <br />
       <button type="submit">Submit</button>
     </form>
     <p v-if="loading">Loading parishes...</p>
-    <p v-if="submissionSuccess">Family added successfully!</p>
+    <p v-if="submissionSuccess">Pledge added successfully!</p>
     <p v-if="submissionError">Error adding family: {{ submissionError }}</p>
   </div>
 </template>
